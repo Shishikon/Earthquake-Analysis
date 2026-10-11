@@ -49,8 +49,11 @@ column_types = copy.dtypes
 
 # ////////////////// Working with columns start //////////////////
 
+safe_test_columns = ['magType', 'nst', 'gap', 'dmin', 'rms', 'horizontalError', 'depthError', 'magError', 'magNst']
 
-# -----COLUMN 'time' START-----
+
+
+# =====COLUMN 'time' START=====
 """Create two columns, one for date another one for time, and drop original time column"""
 
 # Convert time to datatime format
@@ -64,11 +67,12 @@ copy['Time'] = datatime_col.dt.strftime('%H:%M:%S')
 
 # Drop time column
 copy = drop_column(copy, 'time')
-# -----COLUMN 'time' END-----
+# =====COLUMN 'time' END=====
 
 
 
-# -----COLUMN 'depth' START-----
+
+# =====COLUMN 'depth' START=====
 
 copy['depth_class'] = pd.cut(
     copy['depth'],
@@ -82,21 +86,57 @@ copy['depth_class'] = pd.cut(
         'intermediate_3'
     ]
 )
-print(copy.columns)
-# -----COLUMN 'depth' END-----
+
+# Drop depth columns
+copy = drop_column(copy, 'depth')
+# =====COLUMN 'depth' END=====
+
+
+consolidation_into_one = copy[['net', 'locationSource', 'magSource']]
+
+
+# =====COLUMN 'net' START=====
+"""map values"""
+# =====COLUMN 'net' START=====
+
+
+
+# =====COLUMN 'locationSource' START=====
+"""drop"""
+# =====COLUMN 'locationSource' END=====
+
+# =====COLUMN 'magSource' START=====
+"""drop"""
+# =====COLUMN 'magSource' END=====
+
+
+# =====COLUMN 'id' START=====
+copy = drop_column(copy, 'id')
+# =====COLUMN 'id' END=====
+
+
+# =====COLUMN 'updated' START=====
+copy = drop_column(copy, 'updated')
+# =====COLUMN 'updated' END=====
 
 
 
 
 
-# -----COLUMN 'mag' START-----
+# =====COLUMN 'place' START=====
+"""split into parts"""
+place = copy['place']
+# =====COLUMN 'place' END=====
 
 
+# =====COLUMN 'type' START=====
+copy = drop_column(copy, 'type')
+# =====COLUMN 'type' END=====
 
-# print(copy['mag'])
-# -----COLUMN 'mag' END-----
 
-
+# =====COLUMN 'status' START=====
+copy = drop_column(copy, 'status')
+# =====COLUMN 'status' END=====
 
 
 
@@ -148,10 +188,6 @@ magNst             307
 REST               0
 """
 
-
-# 4.1 ID duplication
-ids = copy['id'].duplicated().sum()
-"""0"""
 
 
 # 5 See unique values of columns where sum is less than 10

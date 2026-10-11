@@ -1,0 +1,6 @@
+To drop:
+1) time
+2) Status
+3) type
+4) depth
+
