@@ -92,7 +92,6 @@ copy = drop_column(copy, 'depth')
 # =====COLUMN 'depth' END=====
 
 
-consolidation_into_one = copy[['net', 'locationSource', 'magSource']]
 
 
 # =====COLUMN 'net' START=====
@@ -102,11 +101,11 @@ consolidation_into_one = copy[['net', 'locationSource', 'magSource']]
 
 
 # =====COLUMN 'locationSource' START=====
-"""drop"""
+copy = drop_column(copy, 'locationSource')
 # =====COLUMN 'locationSource' END=====
 
 # =====COLUMN 'magSource' START=====
-"""drop"""
+copy = drop_column(copy, 'magSource')
 # =====COLUMN 'magSource' END=====
 
 
