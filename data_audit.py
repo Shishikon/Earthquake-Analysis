@@ -24,7 +24,7 @@ def audit_columns(df):
         n, nn = len(s), s.notna().sum()
         vc = s.value_counts()
         r = {"column": col, "dtype": str(s.dtype), "missing": n - nn,
-             "missing_%": round(100 * (n - nn) / n, 1), "unique": s.nunique()}
+             "missing_%": round(100 * (n - nn) / n, 1), "unique": s.nunique(), "duplicated values": s.duplicated().sum()}
         flags = []
         if r["missing_%"] >= 99.9: flags.append("EMPTY")
         elif r["missing_%"] >= 30: flags.append("MOSTLY_MISSING")

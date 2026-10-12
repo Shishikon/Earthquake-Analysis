@@ -24,27 +24,6 @@ copy = raw.copy()
 
 
 
-audit = pd.DataFrame({
-    "dtype": copy.dtypes.astype(str),
-    "unique values": copy.nunique(dropna=False),
-    "missing values": copy.isna().sum(),
-    "duplicated values": copy.duplicated().sum(),
-})
-
-audit_columns = audit_columns(copy)
-
-
-# Datatype check
-column_types = copy.dtypes
-
-
-
-
-
-
-
-
-
 # ////////////////// Working with columns start //////////////////
 
 safe_test_columns = ['magType', 'nst', 'gap', 'dmin', 'rms', 'horizontalError', 'depthError', 'magError', 'magNst']
@@ -150,7 +129,7 @@ copy = drop_column(copy, 'type')
 copy = drop_column(copy, 'status')
 # =====COLUMN 'status' END=====
 
-print(copy.head(1).to_string())
+
 
 
 # ////////////////// Working with columns end //////////////////
@@ -166,39 +145,34 @@ print(copy.head(1).to_string())
 
 
 
+audit = pd.DataFrame({
+    "dtype": copy.dtypes.astype(str),
+    "unique values": copy.nunique(dropna=False),
+    "missing values": copy.isna().sum(),
+    "duplicated values": copy.duplicated().sum(),
+})
 
 
+audit_columns = audit_columns(copy)
+dataset_summary = dataset_summary(copy)
+print(audit_columns)
 
 
-
-
-
-
+# Datatype check
+column_types = copy.dtypes
 
 
 # 2 Strip all whitespace in object and str columns
 for col in copy.select_dtypes(["object", "str"]).columns:
     copy[col] = copy[col].astype(str).str.strip()
-"""All object types were striped"""
+
 
 # 3 Check for duplicates
 duplicates = copy.duplicated().sum()
-"""Returned 0 duplicated values"""
+
 
 # 4 Check missing vals
 missing_values = copy.isna().sum()
-"""
-Missing values 
-nst                821
-gap                682
-dmin               930
-rms                267
-horizontalError    950
-depthError         694
-magError           854
-magNst             307
-REST               0
-"""
 
 
 
@@ -210,14 +184,6 @@ for i in copy.columns:
         uniq_vals_list = copy[i].unique().tolist()
 
         uniq_list = uniq_vals, uniq_vals_num, uniq_vals_list
-
-        """
-        1) 'status' has one unique value for all rows.
-        2) 'type' has 2 unique values, earthquake and nuclear explosions
-        Nuclear explosions has 2 rows, so i will drop rows with nuclear explosions.
-        3) Both columns has 1 unique values so i drop both status and type columns.
-        """
-
 
 # 6 Limit float columns up to 3 digits
 for col in copy.select_dtypes('float').columns:
