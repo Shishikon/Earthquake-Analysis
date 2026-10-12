@@ -3,17 +3,12 @@ from data_audit import dataset_summary, audit_columns
 import matplotlib as plt
 from pathlib import Path
 import numpy as np
-
-
-
-# Column droper
-def drop_column(df, column):
-    return df.drop(columns=[column])
+from column_cleaner import *
 
 
 
 # Load the dataset
-LOCAL_FILE = Path("query.csv")
+LOCAL_FILE = Path("Files/query.csv")
 # FILE_URL = ("https://drive.google.com/file/d/1QRH4AMnR-uBIq5NsUk6DK5p2SIsb-QA3/view?usp=sharing")
 
 
@@ -24,48 +19,22 @@ copy = raw.copy()
 
 
 
+
 # ////////////////// Working with columns start //////////////////
 
 safe_test_columns = ['magType', 'nst', 'gap', 'dmin', 'rms', 'horizontalError', 'depthError', 'magError', 'magNst']
 
 
-
 # =====COLUMN 'time' START=====
-"""Create two columns, one for date another one for time, and drop original time column"""
-
-# Convert time to datatime format
-datatime_col = pd.to_datetime(copy['time'], errors='coerce')
-
-# Creating new column date for dates
-copy['date'] = datatime_col.dt.date
-
-# Creating new column time for times
-copy['time'] = datatime_col.dt.strftime('%H:%M:%S')
-
-# Drop time column
-copy = drop_column(copy, 'time')
+copy = time_col(copy)
 # =====COLUMN 'time' END=====
 
 
 
 
 # =====COLUMN 'depth' START=====
-
-copy['depth_class'] = pd.cut(
-    copy['depth'],
-    bins=[-float('inf'), 10, 35, 70, 100, 150, 300],
-    labels=[
-        'very_shallow',
-        'shallow',
-        'moderately_shallow',
-        'intermediate_1',
-        'intermediate_2',
-        'intermediate_3'
-    ]
-)
-
-# Drop depth columns
-copy = drop_column(copy, 'depth')
+copy = depth_col(copy)
+print(copy['depth_class'].value_counts())
 # =====COLUMN 'depth' END=====
 
 
@@ -75,17 +44,7 @@ copy = drop_column(copy, 'depth')
 copy['net'] = copy['net'].map({'us':'USGS',
                                'iscgem':'ISC-GEM',
                                'iscgemsup': 'ISC-GEM Supp'})
-# =====COLUMN 'net' START=====
-
-
-
-# =====COLUMN 'locationSource' START=====
-copy = drop_column(copy, 'locationSource')
-# =====COLUMN 'locationSource' END=====
-
-# =====COLUMN 'magSource' START=====
-copy = drop_column(copy, 'magSource')
-# =====COLUMN 'magSource' END=====
+# =====COLUMN 'net' END=====
 
 
 # =====COLUMN 'id' START=====
@@ -93,11 +52,11 @@ copy = drop_column(copy, 'id')
 # =====COLUMN 'id' END=====
 
 
+
+
 # =====COLUMN 'updated' START=====
 copy = drop_column(copy, 'updated')
 # =====COLUMN 'updated' END=====
-
-
 
 
 
@@ -123,6 +82,17 @@ copy = drop_column(copy, 'place')
 # =====COLUMN 'type' START=====
 copy = drop_column(copy, 'type')
 # =====COLUMN 'type' END=====
+
+
+# =====COLUMN 'locationSource' START=====
+copy = drop_column(copy, 'locationSource')
+# =====COLUMN 'locationSource' END=====
+
+# =====COLUMN 'magSource' START=====
+copy = drop_column(copy, 'magSource')
+# =====COLUMN 'magSource' END=====
+
+
 
 
 # =====COLUMN 'status' START=====
@@ -155,7 +125,7 @@ audit = pd.DataFrame({
 
 audit_columns = audit_columns(copy)
 dataset_summary = dataset_summary(copy)
-print(audit_columns)
+
 
 
 # Datatype check
@@ -193,17 +163,6 @@ for col in copy.select_dtypes('float').columns:
 
 
 
-
-
-
-
-
-"""
-                       time  latitude  longitude  depth  mag magType   nst    gap  dmin   rms net          id                   updated                          place        type  horizontalError  depthError  magError  magNst    status locationSource magSource
-0  2026-09-09T20:17:10.315Z   38.8791    70.5965   10.0  4.6      mb  27.0  144.0  1.11  0.68  us  us7000tg5i  2026-10-02T18:18:57.040Z  25 km SE of Rasht, Tajikistan  earthquake             5.33       1.893     0.116    22.0  reviewed             us        us
-
-
-"""
 
 
 
