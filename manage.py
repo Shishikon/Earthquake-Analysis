@@ -13,13 +13,11 @@ def drop_column(df, column):
 
 
 # Load the dataset
-LOCAL_FILE = Path("Files/query.csv")
-FILE_URL = ("https://drive.google.com/file/d/1QRH4AMnR-uBIq5NsUk6DK5p2SIsb-QA3/view?usp=sharing")
+LOCAL_FILE = Path("query.csv")
+# FILE_URL = ("https://drive.google.com/file/d/1QRH4AMnR-uBIq5NsUk6DK5p2SIsb-QA3/view?usp=sharing")
 
-if LOCAL_FILE.exists():
-    raw = pd.read_csv(LOCAL_FILE)
-else:
-    raw = pd.read_csv(FILE_URL)
+
+raw = pd.read_csv(LOCAL_FILE)
 
 copy = raw.copy()
 
@@ -60,10 +58,10 @@ safe_test_columns = ['magType', 'nst', 'gap', 'dmin', 'rms', 'horizontalError', 
 datatime_col = pd.to_datetime(copy['time'], errors='coerce')
 
 # Creating new column date for dates
-copy['Date'] = datatime_col.dt.date
+copy['date'] = datatime_col.dt.date
 
 # Creating new column time for times
-copy['Time'] = datatime_col.dt.strftime('%H:%M:%S')
+copy['time'] = datatime_col.dt.strftime('%H:%M:%S')
 
 # Drop time column
 copy = drop_column(copy, 'time')
@@ -95,7 +93,9 @@ copy = drop_column(copy, 'depth')
 
 
 # =====COLUMN 'net' START=====
-"""map values"""
+copy['net'] = copy['net'].map({'us':'USGS',
+                               'iscgem':'ISC-GEM',
+                               'iscgemsup': 'ISC-GEM Supp'})
 # =====COLUMN 'net' START=====
 
 
@@ -123,8 +123,21 @@ copy = drop_column(copy, 'updated')
 
 
 # =====COLUMN 'place' START=====
-"""split into parts"""
-place = copy['place']
+countries = ['Tajikistan', 'Uzbekistan', 'Turkmenistan', 'Kazakhstan', 'Kyrgyzstan', 'Iran', 'Afghanistan']
+
+def find_country(text):
+    found = [c for c in countries if c in text]
+    if len(found) == 1:
+        return found[0]
+    if len(found) > 1:
+        return 'Border region'
+    return 'Unknown'
+
+copy['country'] = copy['place'].apply(find_country)
+copy['nearest location'] = copy['place'].str.rsplit(",", n=1).str[0].str.strip()
+
+# drop place column
+copy = drop_column(copy, 'place')
 # =====COLUMN 'place' END=====
 
 
@@ -137,7 +150,7 @@ copy = drop_column(copy, 'type')
 copy = drop_column(copy, 'status')
 # =====COLUMN 'status' END=====
 
-
+print(copy.head(1).to_string())
 
 
 # ////////////////// Working with columns end //////////////////
