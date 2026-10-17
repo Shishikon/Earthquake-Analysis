@@ -18,11 +18,6 @@ audit_report = audit_summary(copy)
 safe_test_columns = ['magType', 'nst', 'gap', 'dmin', 'rms', 'horizontalError', 'depthError', 'magError', 'magNst']
 
 
-print(audit_report.to_string())
-
-
-
-
 # Quick unique value review for low-cardinality columns (< 10 unique values)
 for i in copy.columns:
     if copy[i].nunique(dropna=False) < 10:
